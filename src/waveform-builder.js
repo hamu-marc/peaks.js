@@ -55,6 +55,7 @@ define([
    * @typedef {Object} WaveformBuilderWebAudioOptions
    * @global
    * @property {AudioContext} audioContext
+   * @property {Object} audioProxyHandler
    * @property {AudioBuffer=} audioBuffer
    * @property {Number=} scale
    * @property {Boolean=} multiChannel
@@ -357,34 +358,49 @@ define([
       self._peaks.logger('Peaks.init(): The mediaElement src is invalid');
       return;
     }
+    // proxyhandler returns raw data to be processed
+    if (webAudio.audioProxyHandler && (typeof webAudio.audioProxyHandler === 'function')) {
+      webAudio.audioProxyHandler(function(data) {
+        var webAudioBuilderOptions = {
+          audio_context: webAudio.audioContext,
+          array_buffer: data,
+          split_channels: webAudio.multiChannel,
+          scale: webAudio.scale
+        };
 
-    var xhr = self._createXHR(url, 'arraybuffer', withCredentials, function(event) {
-      if (this.readyState !== 4) {
-        return;
-      }
+        WaveformData.createFromAudio(webAudioBuilderOptions, callback);
+      });
+    }
+    // no proxyhandler defined - try to use xml http request
+    else {
+      var xhr = self._createXHR(url, 'arraybuffer', withCredentials, function(event) {
+        if (this.readyState !== 4) {
+          return;
+        }
 
-      if (this.status !== 200) {
-        callback(
-          new Error('Unable to fetch remote data. HTTP status ' + this.status)
-        );
+        if (this.status !== 200) {
+          callback(
+            new Error('Unable to fetch remote data. HTTP status ' + this.status)
+          );
 
-        return;
-      }
+          return;
+        }
 
-      var webAudioBuilderOptions = {
-        audio_context: webAudio.audioContext,
-        array_buffer: event.target.response,
-        split_channels: webAudio.multiChannel,
-        scale: webAudio.scale
-      };
+        var webAudioBuilderOptions = {
+          audio_context: webAudio.audioContext,
+          array_buffer: event.target.response,
+          split_channels: webAudio.multiChannel,
+          scale: webAudio.scale
+        };
 
-      WaveformData.createFromAudio(webAudioBuilderOptions, callback);
-    },
-    function() {
-      callback(new Error('XHR Failed'));
-    });
+        WaveformData.createFromAudio(webAudioBuilderOptions, callback);
+      },
+      function() {
+        callback(new Error('XHR Failed'));
+      });
 
-    xhr.send();
+      xhr.send();
+    }
   };
 
   /**
