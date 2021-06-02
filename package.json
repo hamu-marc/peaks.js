@@ -1,5 +1,9 @@
 {
-  "name": "peaks.js",
+  "name": "@hamu-marc/peaks.js",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "version": "0.24.0",
   "description": "JavaScript UI component for displaying audio waveforms",
   "main": "./peaks.js",
@@ -76,5 +80,13 @@
     "eventemitter3": "~4.0.7",
     "konva": "~7.2.5",
     "waveform-data": "~3.3.4"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/bbc/peaks.js/issues"
+  },
+  "homepage": "https://github.com/bbc/peaks.js#readme",
+  "directories": {
+    "test": "test"
+  },
+  "author": ""
 }

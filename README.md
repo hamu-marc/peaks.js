@@ -1,3 +1,9 @@
+# Fork of peak.js
+
+This fork adds option to define `audioProxyHandler`, a function to handle data via defining function callback, e.g. using different
+way of fetching data then XHR officially implemented in peaks.js. This is usefull in proxies, or in datasets when additional operations are needed,
+e.g. custom headers or authentication etc. 
+
 ![Build Status](https://github.com/bbc/peaks.js/workflows/Node.js%20CI/badge.svg?branch=master)
 
 <p align="center">
